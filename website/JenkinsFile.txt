@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Install and configure Puppet agent') {
+            steps {
+                // Execute Puppet agent installation and configuration commands on the slave node
+            }
+        }
+
+        stage('Push Ansible configuration for Docker') {
+            steps {
+                // Execute Ansible playbook to install Docker on the test server
+            }
+        }
+
+        stage('Build and deploy PHP Docker container') {
+            steps {
+                // Clone the Git repository containing PHP website and Dockerfile
+                // Build the Docker container using the Dockerfile
+                // Deploy the PHP Docker container on the test server
+            }
+        }
+
+        stage('Handle Job 3 failure') {
+            steps {
+                catchError(buildResult: 'FAILURE', stageResult: 'UNSTABLE') {
+                    // Delete the running container on the test server
+                }
+            }
+        }
+    }
+}
