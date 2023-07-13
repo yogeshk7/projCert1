@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+        
+        stage('Push Ansible configuration for Docker') {
+            steps {
+                sh 'ansible-playbook -i inventory_file install_docker.yml'
+            }
+        }
+
+        stage('Build and deploy PHP Docker container') {
+            steps {
+               // Clone the Git repository containing PHP website and Dockerfile
+                git branch: 'main', url: 'https://github.com/yogeshk7/projCert1.git'
+
+                // Build the Docker container using the Dockerfile
+                 sh 'docker build -t my-php-container .'
+
+                 // Deploy the PHP Docker container on the test server
+                 sh 'docker run -d -p 8080:80 my-php-container'
+            }
+        }
+
+        stage('Handle Job 3 failure') {
+            steps {
+                catchError(buildResult: 'FAILURE', stageResult: 'UNSTABLE') {
+                    // Delete the running container on the test server
+                    catchError(buildResult: 'FAILURE', stageResult: 'UNSTABLE') {
+                         sh 'docker rm -f my-php-container'
+                }
+            }
+            stage('Run Puppet') {
+                 steps {
+                     bat 'puppet agent --test'
+    }
+}
+
+        }
+    }
+}
